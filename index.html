@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Personality Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background: #f7f2eb;
+        }
+        .start-screen, .quiz-screen, .result-screen {
+            text-align: center;
+        }
+        .choice {
+            background-color: #a0522d;
+            color: white;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .choice:hover {
+            background-color: #8b4513;
+        }
+        button {
+            padding: 10px 20px;
+            margin-top: 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        img {
+            width: 100%;
+            height: auto;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Start Screen -->
+    <div class="start-screen">
+        <img src="https://i.ibb.co/HLGCVHGS/chess-opening.png" alt="chess-opening"/><br/><br/>
+        <button onclick="startQuiz()">Play</button>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div class="quiz-screen" style="display: none;">
+        <h2 id="questionText"></h2>
+        <div id="choices"></div>
+        <button id="nextButton" onclick="nextQuestion()" disabled>Next</button>
+        <button id="goBackButton" onclick="goBack()" style="display: none;">Go Back</button>
+    </div>
+
+    <!-- Result Screen -->
+    <div class="result-screen" style="display: none;">
+        <div id="resultImage"></div>
+        <div>
+            <button onclick="share('facebook')">Share to Facebook</button>
+            <button onclick="share('instagram')">Share to Instagram</button>
+            <button onclick="share('x')">Share to X</button>
+            <button onclick="replay()">Replay</button>
+        </div>
+        <p>Thank you for playing &copy; 2025 Bread and Random</p>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "The enemy has declared a war on your kingdom. What is your thought?", a: [
+                { text: "Here we go again, what a prick.", values: ['I'] },
+                { text: "I would say thank the fuck yes. You don't see me running, eh?", values: ['E'] }
+            ]},
+            { q: "Great, it's official. The war begins, rumor has it that the enemy has double their weapons and triple their soldiers. What should we do now?", a: [
+                { text: "Double it and give it to the next person? Haha, kidding, we quadrupled ours of course!", values: ['6', '2'] },
+                { text: "Find out where they got the weapon from, find out who or what supports them financially. Then now the war actually begins.", values: ['8', '3'] },
+                { text: "I need to look at the budget. Also, real question, where is the rumor from?", values: ['4'] },
+                { text: "I'm not risking losing this damn war, we need to come up with a strategy.", values: ['1'] }
+            ]},
+            { q: "The situation is worse than expected, we lost over one hundred thousand troops and gained 0 square meters of land. The enemy is laughing on our allies' dead bodies.", a: [
+                { text: "Shouting at the sky. Arhhhh", values: ['E', '6'] },
+                { text: "*sit silently in thoughts*", values: ['I', '8', '2'] },
+                { text: "This is injustice! Surely there's malice behind this absurd massacre! Also, why are we so weak compared to them?", values: ['E', '1'] },
+                { text: "Write aggressive letters and complain to third parties.", values: ['I', '4', '3'] }
+            ]},
+            { q: "To everyone's surprise, Powerful but far away kingdom decides to lend us a hand.", a: [
+                { text: "Distant water simply can't put down the nearby fire in time. It is appreciated, but we still have a lot to think about.", values: ['I'] },
+                { text: "Just accept it, what else could I be losing at this point?", values: ['E'] }
+            ]},
+            { q: "Our plan works, and there's a call for a ceasefire.", a: [
+                { text: "No, we have just started, and I will stop at nothing.", values: ['8'] },
+                { text: "A cornered enemy has nothing to lose, I suggest we use this time to rest and prepare a back up plan.", values: ['4', '1'] },
+                { text: "We can rest, and while they're at it, I don't promise I won't bite.", values: ['2', '3'] },
+                { text: "It seems to me this is the sign that we're winning. Celebration!", values: ['6'] }
+            ]},
+            { q: "Finally, the war ended, and guess what? You won!", a: [
+                { text: "As if there's other choices, hahahaha.", values: ['2'] },
+                { text: "Yes, but at what cost? I am not unhappy, though I cannot say that I am satisfied.", values: ['4'] },
+                { text: "Finally, I'm tired.", values: ['1', '6'] },
+                { text: "Good, but it looks like we have a lot left to do. They can expect a big ass fine in their ugly ass palace by next monday.", values: ['8', '3'] }
+            ]},
+            { q: "The Kingdom is peaceful once again. And it's all your hard work. What do you want as a reward?", a: [
+                { text: "Ahem, Gold! Horses! Land! The holy trinity of life.", values: ['2'] },
+                { text: "I want my boo, I need a hug. One more day without my baby and I'll die. And then you might too.", values: ['6', '3'] },
+                { text: "Before that, I think we need to see who works the hardest to win this war and make sure I get the most reward.", values: ['1', '8'] },
+                { text: "We got a lot of gold from the enemy, so gold. And because it was a hard fight, a vacation is also appreciated.", values: ['4'] }
+            ]},
+            { q: "You are enjoying your time, but then there's a letter. They want an appeasement marriage! You have to make a decision ...", a: [
+                { text: "Yeah, I'm a little busy. Let's say I don't have to make the damn decision.", values: ['I'] },
+                { text: "Who's else single? Not me though.", values: ['E'] }
+            ]},
+            { q: "The marriage deal went well. Their princess is married to one of our Kingdom's most infamous princes. There's the grandest wedding of the century, everybody is celebrating including you..", a: [
+                { text: "Quietly enjoying the party while looking out the castle window for a way out.", values: ['I', '4', '8'] },
+                { text: "Dance with everybody.", values: ['E', '1', '6'] },
+                { text: "If I'm needed, you can find me at the main buffet table.", values: ['I', '3'] },
+                { text: "Fuck the wedding. Tonight is about me and bae 110th honeymoon.", values: ['E', '2'] }
+            ]},
+            { q: "Before this night is ending, Share your life wisdom with the world.", a: [
+                { text: "Viva la vida!", values: ['2'] },
+                { text: "All is fair in love and war, and so you know, I win both.", values: ['8', '6'] },
+                { text: "Did you see my cat? He's been out for three days.", values: ['1'] },
+                { text: "Love people like you have nothing to lose, alas you will realize you have so much to lose. And this stupid war and wedding almost bankrupt us.", values: ['3', '4'] }
+            ]}
+        ];
+
+        const outcomes = {
+            King: { img: '<img src="https://i.ibb.co/fdHVVm4F/king.png" alt="king"/>', sequences: [['I', '6']] },
+            Queen: { img: '<img src="https://i.ibb.co/Lz0H2HvL/queen.png" alt="queen"/>', sequences: [['E', '8']] },
+            Bishop: { img: '<img src="https://i.ibb.co/sv2yPG79/bishop.png" alt="bishop"/>', sequences: [['I', '4']] },
+            Rook: { img: '<img src="https://i.ibb.co/FqyPRFhn/rook.png" alt="rook"/>', sequences: [['E', '3']] },
+            Knight: { img: '<img src="https://i.ibb.co/QFGZ9Dky/knight.png" alt="knight"/>', sequences: [['E', '2']] },
+            Pawn: { img: '<img src="https://i.ibb.co/604Y46MJ/pawn.png" alt="pawn"/>', sequences: [['I', '1']] }
+        };
+
+        let currentQuestion = 0;
+        let userChoices = [];
+        let selected = null;
+
+        function startQuiz() {
+            document.querySelector('.start-screen').style.display = 'none';
+            document.querySelector('.quiz-screen').style.display = 'block';
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (!questions[currentQuestion]) return;
+            const q = questions[currentQuestion];
+            document.getElementById('questionText').innerText = q.q;
+            const choicesContainer = document.getElementById('choices');
+            choicesContainer.innerHTML = '';
+            q.a.forEach((choice, index) => {
+                const div = document.createElement('div');
+                div.className = 'choice';
+                div.innerText = choice.text;
+                div.onclick = () => selectChoice(index);
+                choicesContainer.appendChild(div);
+            });
+            document.getElementById('nextButton').disabled = true;
+            document.getElementById('goBackButton').style.display = currentQuestion > 0 ? 'inline-block' : 'none';
+        }
+
+        function selectChoice(index) {
+            selected = index;
+            document.getElementById('nextButton').disabled = false;
+            document.querySelectorAll('.choice').forEach((el, i) => {
+                el.style.opacity = i === index ? '1' : '0.6';
+            });
+        }
+
+        function nextQuestion() {
+            if (selected !== null) {
+                const chosen = questions[currentQuestion].a[selected];
+                userChoices = userChoices.concat(chosen.values);
+                selected = null;
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    showQuestion();
+                } else {
+                    showResult();
+                }
+            }
+        }
+
+        function goBack() {
+            currentQuestion--;
+            // Remove the last choices from userChoices
+            const lastChoices = questions[currentQuestion].a[selected].values;
+            userChoices = userChoices.slice(0, -lastChoices.length);
+            selected = null;
+            showQuestion();
+        }
+
+        function showResult() {
+            document.querySelector('.quiz-screen').style.display = 'none';
+            document.querySelector('.result-screen').style.display = 'block';
+            
+            // Count occurrences of each outcome sequence
+            const sequenceCounts = {};
+            Object.entries(outcomes).forEach(([type, { sequences }]) => {
+                sequenceCounts[type] = 0;
+                sequences.forEach(seq => {
+                    for (let i = 0; i < userChoices.length - 1; i++) {
+                        if (userChoices[i] === seq[0] && userChoices[i+1] === seq[1]) {
+                            sequenceCounts[type]++;
+                        }
+                    }
+                });
+            });
+            
+            // Find the outcome with the highest count
+            let maxCount = 0;
+            let resultType = 'Pawn'; // default
+            
+            Object.entries(sequenceCounts).forEach(([type, count]) => {
+                if (count > maxCount) {
+                    maxCount = count;
+                    resultType = type;
+                }
+            });
+            
+            // If there's a tie, use I/E count to break it
+            if (maxCount > 0) {
+                const tiedTypes = Object.entries(sequenceCounts)
+                    .filter(([_, count]) => count === maxCount)
+                    .map(([type]) => type);
+                
+                if (tiedTypes.length > 1) {
+                    const iCount = userChoices.filter(v => v === 'I').length;
+                    const eCount = userChoices.filter(v => v === 'E').length;
+                    if (iCount > eCount) {
+                        resultType = tiedTypes.find(type => outcomes[type].sequences.some(seq => seq[0] === 'I')) || resultType;
+                    }
+                }
+            }
+            
+            const result = outcomes[resultType] || outcomes['Pawn'];
+            document.getElementById('resultImage').innerHTML = result.img;
+        }
+
+        function replay() {
+            currentQuestion = 0;
+            userChoices = [];
+            selected = null;
+            document.querySelector('.result-screen').style.display = 'none';
+            document.querySelector('.start-screen').style.display = 'block';
+        }
+
+        function share(platform) {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent("I just played the Chess Personality Quiz!");
+            if (platform === 'facebook') {
+                window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+            } else if (platform === 'instagram') {
+                alert('To share on Instagram, please save the image and upload it manually to your story.');
+            } else if (platform === 'x') {
+                window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+            }
+        }
+    </script>
+</body>
+</html>
