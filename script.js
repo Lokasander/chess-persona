@@ -24,8 +24,37 @@ const questions = [
         { text: "A cornered enemy has nothing to lose. Let's use this time to rest and prepare a backup plan.", values: ['4', '1'] },
         { text: "We can rest, but while they're at it, I don't promise I won't bite.", values: ['2', '3'] },
         { text: "This seems like a sign that we're winning. Time to celebrate!", values: ['6'] }
-    ]}
-];
+    ]},
+     { q: "Finally, the war has ended, and guess what? You won!", a: [
+                { text: "As if there was any other outcome. Hahahaha!", values: ['2'] },
+                { text: "Yes, but at what cost? I'm not unhappy, but I can't say I'm satisfied either.", values: ['4'] },
+                { text: "Finally. I'm exhausted.", values: ['1', '6'] },
+                { text: "Good, but we still have much to do. They can expect a massive fine at their ugly palace by next Monday.", values: ['8', '3'] }
+            ]},
+            { q: "The kingdom is peaceful once again, thanks to your hard work. What do you want as a reward?", a: [
+                { text: "Gold! Horses! Land! The holy trinity of life.", values: ['2'] },
+                { text: "I want my sweetheart. I need a hug. One more day without my baby and I'll die - and then you might too.", values: ['6', '3'] },
+                { text: "First, let's see who worked hardest to win this war and ensure I get the most reward.", values: ['1', '8'] },
+                { text: "We got plenty of gold from the enemy, so more gold. And since it was a tough fight, a vacation would be nice too.", values: ['4'] }
+            ]},
+            { q: "You're enjoying your time when a letter arrives. They're proposing an appeasement marriage! You must make a decision...", a: [
+                { text: "I'm a little busy right now. Let's say I don't have to make this damn decision.", values: ['I'] },
+                { text: "Who else is single? Not me, though.", values: ['E'] }
+            ]},
+            { q: "The marriage deal went well. Their princess married one of our kingdom's most infamous princes. It's the grandest wedding of the century, and everyone is celebrating - including you.", a: [
+                { text: "Quietly enjoying the party while looking out the castle window for an escape route.", values: ['4', '8'] },
+                { text: "Dancing with everybody.", values: ['1', '6'] },
+                { text: "If you need me, I'll be at the main buffet table.", values: ['3'] },
+                { text: "Screw the wedding. Tonight is about me and bae's 110th honeymoon.", values: ['2'] }
+            ]},
+            { q: "As the night draws to a close, share your life wisdom with the world.", a: [
+                { text: "Viva la vida!", values: ['2'] },
+                { text: "All is fair in love and war - and as you know, I win both.", values: ['8', '6'] },
+                { text: "Have you seen my cat? He's been missing for three days.", values: ['1'] },
+                { text: "Love people like you have nothing to lose, and you'll realize you have everything to lose. This stupid war and wedding nearly bankrupted us.", values: ['3', '4'] }
+            ]}
+        ];    
+         
 
 const outcomes = {
     King: { 
