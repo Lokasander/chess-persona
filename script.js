@@ -107,6 +107,7 @@ function startQuiz() {
 
 
 function shuffleArray(array) {
+    
     const newArray = [...array];
     for (let i = newArray.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -115,7 +116,6 @@ function shuffleArray(array) {
     return newArray;
 }
 
-
 function showQuestion() {
     const question = questions[currentQuestion];
     document.getElementById('questionText').textContent = question.q;
@@ -123,30 +123,29 @@ function showQuestion() {
     choicesContainer.innerHTML = '';
     
     
-    const choicesWithIndex = question.a.map((choice, index) => ({
-        text: choice.text,
-        values: choice.values,
-        originalIndex: index
+    const choicesWithIndices = question.a.map((choice, idx) => ({
+        ...choice,
+        originalIndex: idx
     }));
     
     
-    const shuffledChoices = shuffleArray(choicesWithIndex);
+    const shuffledChoices = shuffleArray(choicesWithIndices);
     
     
-shuffledChoices.forEach((choice, displayIndex) => {
-    const div = document.createElement('div');
-    div.className = 'choice';
-    div.textContent = choice.text;
-    div.onclick = () => {
-        document.querySelectorAll('.choice').forEach(c => {
-            c.classList.remove('selected');
-        });
-        div.classList.add('selected');
-        selected = choice.originalIndex;
-        document.getElementById('nextButton').disabled = false;
-    };
-    choicesContainer.appendChild(div);
-});
+    shuffledChoices.forEach((choice, displayIndex) => {
+        const div = document.createElement('div');
+        div.className = 'choice';
+        div.textContent = choice.text;
+        div.onclick = () => {
+            document.querySelectorAll('.choice').forEach(c => c.classList.remove('selected'));
+            div.classList.add('selected');
+            selected = choice.originalIndex; 
+            document.getElementById('nextButton').disabled = false;
+        };
+        choicesContainer.appendChild(div);
+    });
+    
+    
     
 document.getElementById('nextButton').disabled = true;
 document.getElementById('goBackButton').style.display = currentQuestion > 0 ? 'inline-block' : 'none';
