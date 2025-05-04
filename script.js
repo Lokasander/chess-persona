@@ -10,10 +10,10 @@ const questions = [
         { text: "I'm not risking losing this damn war. We need a solid strategy.", values: ['1'] }
     ]},
     { q: "The situation is worse than expected. We've lost over one hundred thousand troops and gained zero square meters of land. The enemy is laughing over our allies' dead bodies.", a: [
-        { text: "Shouting at the sky. Aaaargh!", values: ['E', '6'] },
-        { text: "*Sitting silently in thought*", values: ['I', '8', '2'] },
+        { text: "Shouting at the sky. Aaaargh!", values: ['6'] },
+        { text: "*Sitting silently in thought*", values: ['8', '2'] },
         { text: "This is injustice! There must be malice behind this absurd massacre! Why are we so weak compared to them?", values: ['E', '1'] },
-        { text: "Write aggressive letters and complain to third parties.", values: ['I', '4', '3'] }
+        { text: "Write aggressive letters and complain to third parties.", values: ['4', '3'] }
     ]},
     { q: "To everyone's surprise, a powerful but distant kingdom decides to lend us a hand.", a: [
         { text: "Distant water can't put out a nearby fire in time. It's appreciated, but we still have much to consider.", values: ['I'] },
@@ -85,9 +85,12 @@ function showQuestion() {
     choicesContainer.innerHTML = '';
     
     q.a.forEach((choice, index) => {
+        const shuffledAnswers = [...question.a].sort(() => Math.random() - 0.5);
+    
+    shuffledAnswers.forEach((answer, index) => {
         const div = document.createElement('div');
         div.className = 'choice';
-        div.textContent = choice.text;
+        div.textContent = answer.text;
         div.onclick = () => selectChoice(index);
         choicesContainer.appendChild(div);
     });
