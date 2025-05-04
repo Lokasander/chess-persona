@@ -133,26 +133,23 @@ function showQuestion() {
     const shuffledChoices = shuffleArray(choicesWithIndex);
     
     
-    shuffledChoices.forEach((choice, displayIndex) => {
-        const div = document.createElement('div');
-        div.className = 'choice';
-        div.textContent = choice.text;
-        div.onclick = () => {
-            
-            document.querySelectorAll('.choice').forEach(c => {
-                c.classList.remove('selected');
-            });
-            
-            div.classList.add('selected');
-            
-            selected = choice.originalIndex;
-            document.getElementById('nextButton').disabled = false;
-        };
-        choicesContainer.appendChild(div);
-    });
+shuffledChoices.forEach((choice, displayIndex) => {
+    const div = document.createElement('div');
+    div.className = 'choice';
+    div.textContent = choice.text;
+    div.onclick = () => {
+        document.querySelectorAll('.choice').forEach(c => {
+            c.classList.remove('selected');
+        });
+        div.classList.add('selected');
+        selected = choice.originalIndex;
+        document.getElementById('nextButton').disabled = false;
+    };
+    choicesContainer.appendChild(div);
+});
     
-    document.getElementById('nextButton').disabled = true;
-    document.getElementById('goBackButton').style.display = currentQuestion > 0 ? 'inline-block' : 'none';
+document.getElementById('nextButton').disabled = true;
+document.getElementById('goBackButton').style.display = currentQuestion > 0 ? 'inline-block' : 'none';
 }
 
 
