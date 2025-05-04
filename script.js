@@ -155,43 +155,81 @@ function showResult() {
     document.getElementById('loadingScreen').style.display = 'none';
     const resultScreen = document.querySelector('.result-screen');
     resultScreen.style.display = 'block';
+
+    // Count I vs E choices
+    let iCount = 0;
+    let eCount = 0;
     
-    const sequenceCounts = {};
-    Object.entries(outcomes).forEach(([type, { sequences }]) => {
-        sequenceCounts[type] = 0;
-        sequences.forEach(seq => {
-            for (let i = 0; i < userChoices.length - 1; i++) {
-                if (userChoices[i] === seq[0] && userChoices[i+1] === seq[1]) {
-                    sequenceCounts[type]++;
-                }
-            }
-        });
-    });
-    
-    let maxCount = 0;
-    let resultType = 'Pawn';
-    
-    Object.entries(sequenceCounts).forEach(([type, count]) => {
-        if (count > maxCount) {
-            maxCount = count;
-            resultType = type;
+    // Count number sequences (1,2,3,4,6,8)
+    const numberCounts = { '1': 0, '2': 0, '3': 0, '4': 0, '6': 0, '8': 0 };
+
+    userChoices.forEach(choice => {
+        if (choice === 'I') iCount++;
+        if (choice === 'E') eCount++;
+        if (['1','2','3','4','6','8'].includes(choice)) {
+            numberCounts[choice]++;
         }
     });
+
+    // Determine I/E dominance
+    const isIDominant = iCount > eCount;
     
-    if (maxCount > 0) {
-        const tiedTypes = Object.entries(sequenceCounts)
-            .filter(([_, count]) => count === maxCount)
-            .map(([type]) => type);
-        
-        if (tiedTypes.length > 1) {
-            const iCount = userChoices.filter(v => v === 'I').length;
-            const eCount = userChoices.filter(v => v === 'E').length;
-            if (iCount > eCount) {
-                resultType = tiedTypes.find(type => outcomes[type].sequences.some(seq => seq[0] === 'I')) || resultType;
-            }
+    // Find most frequent number
+    let maxNumberCount = 0;
+    let mostFrequentNumbers = [];
+    
+    Object.entries(numberCounts).forEach(([number, count]) => {
+        if (count > maxNumberCount) {
+            maxNumberCount = count;
+            mostFrequentNumbers = [number];
+        } else if (count === maxNumberCount) {
+            mostFrequentNumbers.push(number);
+        }
+    });
+
+    // Define outcome mapping
+    const outcomeMap = {
+        'I': {
+            '1': 'Pawn',
+            '4': 'Bishop',
+            '6': 'King'
+        },
+        'E': {
+            '2': 'Knight',
+            '3': 'Rook',
+            '8': 'Queen'
+        }
+    };
+
+    // Determine final result
+    let resultType = 'Pawn'; // Default fallback
+    
+    // First try to find exact match with dominant type
+    for (const number of mostFrequentNumbers) {
+        const type = isIDominant ? 'I' : 'E';
+        if (outcomeMap[type][number]) {
+            resultType = outcomeMap[type][number];
+            break;
         }
     }
     
+    // If no exact match, find closest match
+    if (resultType === 'Pawn') {
+        const allNumbers = ['8','6','4','3','2','1']; // Priority order
+        for (const number of allNumbers) {
+            if (mostFrequentNumbers.includes(number)) {
+                if (isIDominant && ['1','4','6'].includes(number)) {
+                    resultType = outcomeMap['I'][number];
+                    break;
+                } else if (!isIDominant && ['2','3','8'].includes(number)) {
+                    resultType = outcomeMap['E'][number];
+                    break;
+                }
+            }
+        }
+    }
+
+    // Display result
     const result = outcomes[resultType] || outcomes['Pawn'];
     document.getElementById('resultTitle').innerHTML = result.title;
     document.getElementById('resultImage').innerHTML = result.img;
