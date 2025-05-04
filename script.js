@@ -105,29 +105,38 @@ function startQuiz() {
     showQuestion();
 }
 
+// Add this Fisher-Yates shuffle function
 function shuffleArray(array) {
-    const newArray = [...array];
-    for (let i = newArray.length - 1; i > 0; i--) {
+    const newArr = [...array];
+    for (let i = newArr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+        [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
     }
-    return newArray;
+    return newArr;
 }
 
+// Modified showQuestion function
 function showQuestion() {
-    const q = questions[currentQuestion];
-    document.getElementById('questionText').textContent = q.q;
+    const question = questions[currentQuestion];
+    document.getElementById('questionText').textContent = question.q;
     const choicesContainer = document.getElementById('choices');
     choicesContainer.innerHTML = '';
     
-
-    const shuffledAnswers = shuffleArray(q.a);
+    // Shuffle the choices while preserving original indices
+    const shuffledChoices = shuffleArray(question.a.map((choice, index) => ({ ...choice, originalIndex: index }));
     
-    shuffledAnswers.forEach((choice, index) => {
+    shuffledChoices.forEach((choice, displayIndex) => {
         const div = document.createElement('div');
         div.className = 'choice';
         div.textContent = choice.text;
-        div.onclick = () => selectChoice(index, q.a.indexOf(choice)); // Pass original index
+        div.onclick = () => {
+            // Remove previous selection
+            document.querySelectorAll('.choice').forEach(c => c.classList.remove('selected'));
+            // Set new selection
+            div.classList.add('selected');
+            selected = choice.originalIndex; // Store the original index
+            document.getElementById('nextButton').disabled = false;
+        };
         choicesContainer.appendChild(div);
     });
     
@@ -135,15 +144,6 @@ function showQuestion() {
     document.getElementById('goBackButton').style.display = currentQuestion > 0 ? 'inline-block' : 'none';
 }
 
-function selectChoice(shuffledIndex, originalIndex) {
-    document.querySelectorAll('.choice').forEach(choice => {
-        choice.classList.remove('selected');
-    });
-    
-    selected = originalIndex; 
-    document.querySelectorAll('.choice')[shuffledIndex].classList.add('selected');
-    document.getElementById('nextButton').disabled = false;
-}
 
 function nextQuestion() {
     if (selected !== null) {
