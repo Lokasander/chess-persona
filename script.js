@@ -105,36 +105,47 @@ function startQuiz() {
     showQuestion();
 }
 
-// Add this Fisher-Yates shuffle function
+
 function shuffleArray(array) {
-    const newArr = [...array];
-    for (let i = newArr.length - 1; i > 0; i--) {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
     }
-    return newArr;
+    return newArray;
 }
 
-// Modified showQuestion function
+
 function showQuestion() {
     const question = questions[currentQuestion];
     document.getElementById('questionText').textContent = question.q;
     const choicesContainer = document.getElementById('choices');
     choicesContainer.innerHTML = '';
     
-    // Shuffle the choices while preserving original indices
-    const shuffledChoices = shuffleArray(question.a.map((choice, index) => ({ ...choice, originalIndex: index }));
+    
+    const choicesWithIndex = question.a.map((choice, index) => ({
+        text: choice.text,
+        values: choice.values,
+        originalIndex: index
+    }));
+    
+    
+    const shuffledChoices = shuffleArray(choicesWithIndex);
+    
     
     shuffledChoices.forEach((choice, displayIndex) => {
         const div = document.createElement('div');
         div.className = 'choice';
         div.textContent = choice.text;
         div.onclick = () => {
-            // Remove previous selection
-            document.querySelectorAll('.choice').forEach(c => c.classList.remove('selected'));
-            // Set new selection
+            
+            document.querySelectorAll('.choice').forEach(c => {
+                c.classList.remove('selected');
+            });
+            
             div.classList.add('selected');
-            selected = choice.originalIndex; // Store the original index
+            
+            selected = choice.originalIndex;
             document.getElementById('nextButton').disabled = false;
         };
         choicesContainer.appendChild(div);
