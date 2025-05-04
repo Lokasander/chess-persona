@@ -105,22 +105,29 @@ function startQuiz() {
     showQuestion();
 }
 
+function shuffleArray(array) {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+}
+
 function showQuestion() {
-    if (!questions[currentQuestion]) return;
-    
     const q = questions[currentQuestion];
     document.getElementById('questionText').textContent = q.q;
     const choicesContainer = document.getElementById('choices');
     choicesContainer.innerHTML = '';
     
-    q.a.forEach((choice, index) => {
-        const shuffledAnswers = [...question.a].sort(() => Math.random() - 0.5);
+
+    const shuffledAnswers = shuffleArray(q.a);
     
-    shuffledAnswers.forEach((answer, index) => {
+    shuffledAnswers.forEach((choice, index) => {
         const div = document.createElement('div');
         div.className = 'choice';
-        div.textContent = answer.text;
-        div.onclick = () => selectChoice(index);
+        div.textContent = choice.text;
+        div.onclick = () => selectChoice(index, q.a.indexOf(choice)); // Pass original index
         choicesContainer.appendChild(div);
     });
     
@@ -128,15 +135,14 @@ function showQuestion() {
     document.getElementById('goBackButton').style.display = currentQuestion > 0 ? 'inline-block' : 'none';
 }
 
-function selectChoice(index) {
-    // Remove previous selection
+function selectChoice(shuffledIndex, originalIndex) {
     document.querySelectorAll('.choice').forEach(choice => {
         choice.classList.remove('selected');
     });
     
-    selected = index;
+    selected = originalIndex; 
+    document.querySelectorAll('.choice')[shuffledIndex].classList.add('selected');
     document.getElementById('nextButton').disabled = false;
-    document.querySelectorAll('.choice')[index].classList.add('selected');
 }
 
 function nextQuestion() {
